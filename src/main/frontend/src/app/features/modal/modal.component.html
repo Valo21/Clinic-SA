@@ -1,0 +1,8 @@
+<div [@openClosed]="state ? 'open' : 'closed'" class="absolute left-0 top-0 w-screen h-screen flex justify-center items-center bg-sky-200/20 backdrop-blur-md z-10 shadow-xl">
+    <div class="card relative">
+        <button class="absolute top-2 right-2" (click)="closeModal()">
+            <ng-icon name="faSolidCircleXmark" color="#aa0000"></ng-icon>
+        </button>
+        <ng-content/>
+    </div>
+</div>

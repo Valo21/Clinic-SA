@@ -1,0 +1,20 @@
+<div class="flex bg-slate-50 justify-center mb-4 px-4 sm:px-28 md:px-36">
+    <div class="flex flex-1 p-4 bg-slate-50 items-center justify-between">
+        <div>
+            <a routerLink="/">
+                Logo
+            </a>
+        </div>
+        <div>
+            @if (auth.$authenticationState.value == 'AUTHORIZED'){
+                <a routerLink="/profile">
+                    <img alt="Profile picture" [src]="user?.picture" width="32" class="rounded-full">
+                </a>
+            } @else {
+                <a routerLink="/auth">
+                    <button class="button button-primary">Join</button>
+                </a>
+            }
+        </div>
+    </div>
+</div>

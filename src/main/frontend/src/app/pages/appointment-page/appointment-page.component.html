@@ -1,0 +1,51 @@
+<main class="flex flex-1 flex-col justify-center items-center relative">
+    <div class="card responsive-card items-center gap-4">
+        <img alt="Profile picture" class="rounded-full" referrerpolicy="no-referrer" [ngSrc]="config.professional.picture" priority="true" width="150" height="150">
+        <h1 class="font-semibold text-xl">{{config.professional.name}}</h1>
+    </div>
+    <form #form="ngForm" (ngSubmit)="onSubmit($event, form)" class="card responsive-card gap-4">
+        <textarea name="description" placeholder="Description" class="control-input" ngModel></textarea>
+        <input name="firstName" type="text" ngModel class="control-input">
+        <input name="lastName" type="text" ngModel class="control-input">
+        <div class="flex gap-2">
+            <select name="personalIDType" ngModel class="control-input">
+                <option value="DNI" [selected]="true">DNI</option>
+            </select>
+            <input name="personalID" ngModel class="control-input" placeholder="2524390">
+        </div>
+        <input name="date" type="date" ngModel class="control-input">
+        <input type="time" min="09:00" step="900">
+        <button [disabled]="isFetching" type="submit" class="button button-secondary self-end">Submit</button>
+    </form>
+</main>
+
+<app-modal [state]="false">
+    <table>
+        <thead>
+            <th>
+                Monday
+            </th>
+            <th>
+                Tuesday
+            </th>
+            <th>
+                Wednesday
+            </th>
+            <th>
+                Thursday
+            </th>
+            <th>
+                Friday
+            </th>
+            <th>
+                Saturday
+            </th>
+            <th>
+                Sunday
+            </th>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+</app-modal>

@@ -1,0 +1,16 @@
+<div class="absolute flex flex-col gap-6 bottom-4 left-4 bg-white px-5 py-4 pt-5 rounded-full shadow-md">
+    @if (isOpen){
+        <a>
+            <ng-icon name="faSolidBars" size="20"/>
+        </a>
+        <a>
+            <ng-icon name="faSolidBars" size="20"/>
+        </a>
+        <a>
+            <ng-icon name="faSolidBars" size="20"/>
+        </a>
+    }
+    <button (click)="isOpen = !isOpen">
+        <ng-icon name="faSolidBars" size="20"/>
+    </button>
+</div>

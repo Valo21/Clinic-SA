@@ -1,0 +1,10 @@
+@if (auth.$authenticationState.value == 'PENDING'){
+    <div class="flex flex-1 justify-center items-center">
+        <div class="animate-spin w-10 h-10 border-4 border-b-sky-600 rounded-full"></div>
+    </div>
+} @else {
+    <app-navbar/>
+    <main class="flex flex-col flex-1 layout">
+        <router-outlet></router-outlet>
+    </main>
+}

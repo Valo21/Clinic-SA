@@ -1,0 +1,69 @@
+@if (patient) {
+    <div class="flex flex-col flex-1 gap-4">
+        <div class="card">
+            <h1>Name: {{patient.firstName}} {{patient.lastName}}</h1>
+            <h1>ID Type: {{patient.personalIdType}}</h1>
+            <h1>Personal ID: {{patient.personalId}}</h1>
+        </div>
+        <div class="flex flex-col gap-2">
+            <h1 class="text-xl font-semibold mb-2">Patient history</h1>
+            <div *ngFor="let history of patient.appointments" class="card">
+
+            </div>
+            <button (click)="isPatientHistoryModalOpen = true" >Add health history</button>
+        </div>
+    </div>
+
+
+    <app-modal [(state)]="isPatientHistoryModalOpen" >
+        <form #historyForm="ngForm" (submit)="handlePHSubmit($event, historyForm)" class="flex flex-col p-4 gap-4 overflow-y-auto max-h-[700px]">
+            <h1>{{patient.firstName}} {{patient.lastName}}</h1>
+            <h1>Personal ID: {{patient.personalId}}</h1>
+            <div class="flex gap-2 items-center">
+                <label>Age:</label>
+                <input name="age" [value]="age" class="control-input" ngModel>
+            </div>
+            <div class="flex gap-2 items-center">
+                <label>Nationality:</label>
+                <input name="nationality" class="control-input" ngModel>
+            </div>
+            <div class="flex gap-2 items-center">
+                <label>Sex:</label>
+                <input name="sex" class="control-input" ngModel>
+            </div>
+            <div class="flex gap-2 items-center">
+                <label>Occupation:</label>
+                <input name="occupation" class="control-input" ngModel>
+            </div>
+            <div class="flex gap-2 items-center">
+                <label>Date:</label>
+                <input name="date" class="control-input" [disabled]="true" [value]="currentDate">
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="font-bold">Motivation:</label>
+                <textarea name="motivation" class="control-input" ngModel></textarea>
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="font-bold">Current disease:</label>
+                <textarea name="currentDisease" class="control-input" ngModel></textarea>
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="font-bold">Current disease:</label>
+                <textarea name="currentDiseaseBackground" class="control-input" ngModel></textarea>
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="font-bold">Personal background:</label>
+                <textarea name="personalBackground" class="control-input" ngModel></textarea>
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="font-bold">Family background:</label>
+                <textarea name="familyBackground" class="control-input" ngModel></textarea>
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="font-bold">Hereditary background:</label>
+                <textarea name="hereditaryBackground" class="control-input" ngModel></textarea>
+            </div>
+            <button class="button button-secondary" type="submit">Save</button>
+        </form>
+    </app-modal>
+}

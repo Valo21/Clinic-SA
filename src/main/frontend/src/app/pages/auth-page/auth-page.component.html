@@ -1,0 +1,74 @@
+<main class="flex flex-1 flex-col justify-center items-center relative">
+    <form [@shownHidden]="showSignUpForm ? 'hidden' : 'shown'" id="signin-form" #signinForm='ngForm' class="flex flex-col p-6 gap-4 rounded-md bg-gray-50 shadow-xl responsive-card">
+        <h1 class="text-center font-bold text-2xl mb-6">Sign In</h1>
+        <div class="flex flex-col gap-3">
+            <div class="form-control">
+                <ng-icon name="faSolidEnvelope" size="20"></ng-icon>
+                <input name="email" type="email" placeholder="Email" ngModel>
+            </div>
+            <div class="form-control">
+                <ng-icon name="faSolidLock" size="20"></ng-icon>
+                <input name="password" type="password" placeholder="Password" ngModel>
+            </div>
+        </div>
+        <div class="flex flex-col gap-2">
+            <a routerLink="/password-restore" class="text-sky-500">Forgot password?</a>
+            <h2>Dont have an account? <button (click)="showSignUpForm=true" class="text-sky-500">Sign up</button></h2>
+        </div>
+        <button class="p-2 bg-sky-400 rounded-full">Sign in</button>
+        <div class="w-full flex gap-1 items-center">
+            <div class="flex-1 border-[1px] border-sky-400"></div>
+            or
+            <div class="flex-1 border-[1px] border-sky-400"></div>
+        </div>
+        <div class="flex flex-col px-6">
+            <button (click)="auth.signInWithGoogle()" class="p-2 bg-white rounded-full border-2 flex items-center justify-center gap-2">
+                <ng-icon name="faBrandGoogle" size="20" color="#4285F4"></ng-icon>
+                Sign in with Google
+            </button>
+        </div>
+    </form>
+
+    <form [@shownHidden]="showSignUpForm ? 'shown' : 'hidden'" id="signup-form" #signupForm='ngForm' class="absolute w-full max-w-sm flex flex-col p-6 gap-4 rounded-md bg-gray-50 shadow-xl">
+        <h1 class="text-center font-bold text-2xl mb-6">Sign Up</h1>
+        <div class="flex flex-col gap-3">
+            <div class="form-control">
+                <ng-icon name="faSolidUser" size="20"></ng-icon>
+                <input name="name" type="text" placeholder="Name" ngModel>
+            </div>
+            <div class="form-control">
+                <ng-icon name="faSolidUser" size="20"></ng-icon>
+                <input name="lastname" type="text" placeholder="Last name" ngModel>
+            </div>
+            <div class="form-control">
+                <ng-icon name="faSolidEnvelope" size="20"></ng-icon>
+                <input name="email" type="email" placeholder="Email" ngModel>
+            </div>
+            <div class="form-control">
+                <ng-icon name="faSolidLock" size="20"></ng-icon>
+                <input name="password" type="password" placeholder="Password" ngModel>
+            </div>
+            <div class="form-control">
+                <ng-icon name="faSolidLock" size="20"></ng-icon>
+                <input name="rPassword" type="password" placeholder="Repeat password" ngModel>
+            </div>
+            <!-- <input name="institution" type="text" placeholder="Institution (optional)" class="p-2 rounded-md outline-none bg-sky-100 shadow-sm">
+            -->
+        </div>
+        <div class="flex flex-col gap-2">
+            <h2>Already have an account? <button (click)="showSignUpForm=false" class="text-sky-500">Sign in</button></h2>
+        </div>
+        <button class="p-2 bg-sky-400 rounded-full">Sign up</button>
+        <div class="w-full flex gap-1 items-center">
+            <div class="flex-1 border-[1px] border-sky-400"></div>
+            or
+            <div class="flex-1 border-[1px] border-sky-400"></div>
+        </div>
+        <div class="flex flex-col px-6">
+            <button (click)="auth.signInWithGoogle()" class="p-2 bg-white rounded-full border-2 flex items-center justify-center gap-2">
+                <ng-icon name="faBrandGoogle" size="20" color="#4285F4"></ng-icon>
+                Sign up with Google
+            </button>
+        </div>
+    </form>
+</main>

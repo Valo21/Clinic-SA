@@ -1,0 +1,99 @@
+<div class="flex flex-col items-center gap-4 [&>*]:animate-fade-in-down" >
+    @if (user){
+        <div class="card responsive-card">
+            <img alt="Profile picture" referrerpolicy="no-referrer" [ngSrc]="user.picture" priority="true" width="100" height="100">
+            <div class="flex flex-col mt-4">
+                <h1>Name: {{user.name}}</h1>
+                <h1>Email: {{user.email}}</h1>
+                <h2>Specialty: </h2>
+            </div>
+        </div>
+        @if (appointments){
+            <div class="card responsive-card gap-4">
+                <h1 class="font-bold text-xl border-b-2">Appointments</h1>
+                <table>
+                    <thead class="font-bold">
+                    <td>Date</td>
+                    <td>Description</td>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let appointment of appointments">
+                        <td>{{formatDate(appointment.date)}}</td>
+                        <td>{{appointment.description}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="flex justify-between gap-4">
+                    <div class="form-control flex-1">
+                        <input #linkPath class="w-full" disabled [value]="location.origin + '/#/appointments?id=' + linkId">
+                        @if (copied) {
+                            <ng-icon name="faSolidCheck" color="green"/>
+                        } @else {
+                            <ng-icon (click)="copyToClipboard(linkPath.value)" name="faClipboard" class="cursor-pointer"/>
+                        }
+                    </div>
+                    <button class="button button-primary" (click)="isLinkConfigModalOpen=true">Edit link config</button>
+                </div>
+            </div>
+        } @else {
+            <div class="w-full responsive-card flex flex-col h-80 overflow-hidden gap-4 bg-slate-50 rounded-md">
+                <app-skeleton-screen/>
+            </div>
+        }
+        @if (patients){
+            <div class="card responsive-card">
+                <h1 class="font-bold text-xl border-b-2">Patients</h1>
+                <table>
+                    <thead class="font-bold">
+                    <td>#</td>
+                    <td>Name</td>
+                    <td>Appointments</td>
+                    <td>View</td>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let patient of patients">
+                        <td>{{1}}</td>
+                        <td>{{patient.firstName}} {{patient.lastName}}</td>
+                        <td>{{patient.appointments?.length}}</td>
+                        <td>
+                            <a routerLink="/dashboard/patient" [queryParams]="{id: patient.id}">
+                                Go
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        } @else {
+            <div class="w-full responsive-card flex flex-col h-80 overflow-hidden gap-4 bg-slate-50 rounded-md ">
+                <app-skeleton-screen/>
+            </div>
+        }
+    }
+</div>
+
+<app-modal [state]="true">
+    <form class="flex flex-col gap-2" #linkConfigForm='ngForm' (submit)="saveLinkConfig($event, linkConfigForm)">
+        <div>
+            <label>
+                Duration:
+            </label>
+            <select name="duration" ngModel>
+                <option *ngFor="let index of Array.from(Array(10).keys())" [value]="(index + 1) * 10" [selected]="index == 2">{{(index + 1) * 10}} minutes</option>
+            </select>
+        </div>
+        <div>
+            <label>
+                Start hour:
+            </label>
+            <input type="time">
+        </div>
+        <div>
+            <label>
+                End hour:
+            </label>
+            <input type="time">
+        </div>
+        <button class="self-end bg-sky-400 px-4 py-1 rounded-full" type="submit">Save</button>
+    </form>
+</app-modal>
