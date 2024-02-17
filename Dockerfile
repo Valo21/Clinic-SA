@@ -14,4 +14,4 @@ EXPOSE 8080
 
 COPY --from=build ./target/Clinic-0.0.1-SNAPSHOT.jar .
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "Clinic-0.0.1-SNAPSHOT.jar"]
