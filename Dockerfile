@@ -6,7 +6,7 @@ COPY . .
 
 RUN chmod +x mvnw
 
-RUN ./mvnw clean package
+RUN ./mvnw clean package -Pprod
 
 FROM openjdk:17-jdk-slim
 
