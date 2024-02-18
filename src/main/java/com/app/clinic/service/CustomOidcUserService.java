@@ -1,33 +1,23 @@
 package com.app.clinic.service;
 
 import com.app.clinic.controller.AuthController;
-import com.app.clinic.dto.GoogleUserInfo;
-import com.app.clinic.dto.Oauth2UserInfoDto;
-import com.app.clinic.dto.UserPrincipal;
 import com.app.clinic.model.AppointmentLink;
 import com.app.clinic.model.Professional;
 import com.app.clinic.repository.AppointmentLinkRepository;
 import com.app.clinic.repository.ProfessionalRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.flogger.Flogger;
-import org.slf4j.ILoggerFactory;
+
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
-import org.springframework.security.core.GrantedAuthority;
+
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Logger;
@@ -96,22 +86,11 @@ public class CustomOidcUserService extends OidcUserService {
                 .build());
         professional.setAppointmentLink(appointmentLink);
         professionalRepository.save(professional);
-        Collection<? extends GrantedAuthority> authorities = oidcUser.getAuthorities();
-        Map<String, Object> attributes = new HashMap<>(oidcUser.getAttributes());
-        attributes.put("id", professional.getId());
-        attributes.put("appointmentLinkId", appointmentLink.getId());
-        OidcUserInfo userInfo = new OidcUserInfo(attributes);
-        return new DefaultOidcUser(authorities, oidcUser.getIdToken(), userInfo);
+        return oidcUser;
     }
 
     private OidcUser updateExistingUser(Professional existingUser, OidcUser oidcUser) {
         logger.info("Updating user...");
-        Collection<? extends GrantedAuthority> authorities = oidcUser.getAuthorities();
-        Map<String, Object> attributes = new HashMap<>(oidcUser.getAttributes());
-        attributes.put("id", existingUser.getId());
-        attributes.put("picture", existingUser.getPicture());
-        attributes.put("appointmentLinkId", existingUser.getAppointmentLink().getId());
-        OidcUserInfo userInfo = new OidcUserInfo(attributes);
-        return new DefaultOidcUser(authorities, oidcUser.getIdToken(), userInfo);
+        return oidcUser;
     }
 }

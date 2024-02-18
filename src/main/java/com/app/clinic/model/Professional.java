@@ -1,6 +1,7 @@
 package com.app.clinic.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -40,11 +41,11 @@ public class Professional {
     @Column(nullable = false)
     private String picture;
 
-    @Column(nullable = true)
+    @Column()
     private String specialty;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(nullable = true, name = "appointments")
+    @JoinColumn( name = "appointments")
     @JsonManagedReference
     private List<Appointment> appointments;
 
@@ -53,19 +54,20 @@ public class Professional {
     @JsonManagedReference
     private List<DentalChart> dentalCharts;
 
-    @JoinColumn(nullable = true)
+    @JoinColumn()
     @ManyToOne
     @JsonManagedReference
     private Institution institution;
 
     @JoinColumn(name = "appointment_link_id")
     @OneToOne(targetEntity = AppointmentLink.class)
+    @JsonBackReference
     private AppointmentLink appointmentLink;
 
-    @Column(nullable = true)
+    @Column()
     private String provider;
 
-    @Column(nullable = true)
+    @Column()
     private String providerId;
 
     @Column(nullable = false)

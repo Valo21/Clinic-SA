@@ -6,7 +6,6 @@ import com.app.clinic.repository.ProfessionalRepository;
 import com.app.clinic.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,13 +15,11 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.MessageFormat;
-import java.util.Optional;
 import java.util.logging.Logger;
 
 import static java.util.Map.of;
@@ -42,27 +39,22 @@ public class AuthController {
         logger.info("Getting user");
         if (authentication != null) {
             Object user = authentication.getPrincipal();
-            UserInfo userInfo = null;
-            if (user instanceof UserPrincipal info) {
-                userInfo = new UserInfo(
-                        info.getId(),
-                        info.getGivenName(),
-                        info.getFamilyName(),
-                        info.getEmail(),
-                        info.getPicture(),
-                        info.getAppointmentLinkId()
-                );
-            } else if (user instanceof OidcUser) {
-                OidcUserInfo info = ((OidcUser) user).getUserInfo();
-                userInfo = new UserInfo(
-                        info.getClaimAsString("id"),
-                        info.getGivenName(),
-                        info.getFamilyName(),
-                        info.getEmail(),
-                        info.getPicture(),
-                        info.getClaimAsString("appointmentLinkId")
-                );
+            String email = "";
+            if (user instanceof User info) {
+                email = info.getUsername();
+            } else if (user instanceof OidcUser info) {
+                email =  info.getEmail();
             }
+            Professional info = professionalRepository.findOneByEmail(email).orElse(null);
+            assert info != null;
+            UserInfo userInfo = new UserInfo(
+                    info.getId(),
+                    info.getGivenName(),
+                    info.getFamilyName(),
+                    info.getEmail(),
+                    info.getPicture(),
+                    info.getAppointmentLink().getId()
+            );
             return ResponseEntity.ok(userInfo);
         } else {
             return ResponseEntity.ok("");
@@ -75,7 +67,7 @@ public class AuthController {
             SecurityContext context = authenticationService.signIn(body.getEmail(), body.getPassword());
             HttpSession session = req.getSession(true);
             session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
-            return new ResponseEntity<ResponseDTO>(
+            return new ResponseEntity<>(
                     ResponseDTO.builder()
                             .data("Signin")
                     .build(), HttpStatus.OK
@@ -96,7 +88,7 @@ public class AuthController {
             SecurityContext context = authenticationService.signUp(body.getFirstName(), body.getLastName(), body.getEmail(), body.getPassword());
             HttpSession session = req.getSession(true);
             session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
-            return new ResponseEntity<ResponseDTO>(
+            return new ResponseEntity<>(
                     ResponseDTO.builder()
                             .data("Signin")
                             .build(),

@@ -10,7 +10,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +49,7 @@ public class AuthenticationService {
                         .email(email)
                         .emailVerified(false)
                         .password(passwordEncoder.encode(password))
-                        .picture("")
+                        .picture("assets/default-profile-picture.jpg")
                         .build()
         );
         AppointmentLink appointmentLink = appointmentLinkRepository.save(AppointmentLink

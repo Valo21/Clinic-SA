@@ -1,5 +1,6 @@
 package com.app.clinic.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -18,6 +19,7 @@ public class AppointmentLink {
 
     @JoinColumn(name = "professional_id")
     @OneToOne(targetEntity = Professional.class)
+    @JsonManagedReference
     private Professional professional;
 
     @Column(nullable = false)
