@@ -3,22 +3,22 @@ package com.app.clinic.config;
 import com.app.clinic.config.web.CookieCsrfFilter;
 import com.app.clinic.service.CustomOidcUserService;
 import com.app.clinic.service.CustomUserDetailsService;
-import com.app.clinic.service.OAuth2UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -31,20 +31,14 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
-    private final OAuth2UserService oAuth2UserService;
     private final CustomOidcUserService customOidcUserService;
     private final CustomUserDetailsService customUserDetailsService;
-    private static final List<String> clients = Arrays.asList("google", "facebook");
+    private final CustomAuthenticationProvider customAuthenticationProvider;
     private final Environment env;
+    private static final List<String> clients = Arrays.asList("google", "facebook");
     private final Logger logger = Logger.getLogger(this.getClass().getName());
-
-    SecurityConfig(OAuth2UserService oAuth2UserService, CustomOidcUserService customOidcUserService, Environment env, CustomUserDetailsService customUserDetailsService){
-        this.oAuth2UserService = oAuth2UserService;
-        this.customOidcUserService = customOidcUserService;
-        this.customUserDetailsService = customUserDetailsService;
-        this.env = env;
-    }
 
     private ClientRegistration getRegistration(String client) {
         logger.info("Getting registration");
@@ -85,6 +79,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(
                                 "/",
@@ -92,19 +87,19 @@ public class SecurityConfig {
                                 "*.ico",
                                 "*.css",
                                 "*.js",
+                                "api/v1/professionals",
                                 "api/v1/appointments",
                                 "api/v1/appointment-link",
-                                "api/v1/auth")
+                                "/api/v1/auth")
                         .permitAll()
                         .anyRequest()
-                        .authenticated()
+                        .permitAll()
                 )
                 .oauth2Login(customizer -> customizer
                         .clientRegistrationRepository(clientRegistrationRepository())
                         .authorizedClientService(authorizedClientService())
                         .loginPage("/#/auth")
                         .userInfoEndpoint(infoEndpoint -> infoEndpoint
-                                .userService(oAuth2UserService)
                                 .oidcUserService(customOidcUserService)
                             )
                         )
@@ -114,4 +109,15 @@ public class SecurityConfig {
                 .addFilterAfter(new CookieCsrfFilter(), BasicAuthenticationFilter.class);
         return http.build();
     }
+
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+    @Bean
+    public AuthenticationManager authenticationManagerBean(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        return authenticationManagerBuilder.build();
+    }
+
 }

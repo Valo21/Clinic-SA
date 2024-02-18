@@ -1,14 +1,12 @@
 package com.app.clinic.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
-public class ProfessionalCreationDTO {
-    private String firstName;
-
-    private String lastName;
-
+public class SignInDTO {
+    @NotNull
     private String email;
-
+    @NotNull
     private String password;
 }

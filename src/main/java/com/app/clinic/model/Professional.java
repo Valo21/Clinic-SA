@@ -22,9 +22,6 @@ public class Professional {
     private String id;
 
     @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
     private String givenName;
 
     @Column(nullable = false)
@@ -46,7 +43,7 @@ public class Professional {
     @Column(nullable = true)
     private String specialty;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(nullable = true, name = "appointments")
     @JsonManagedReference
     private List<Appointment> appointments;

@@ -1,5 +1,6 @@
 package com.app.clinic.service;
 
+import com.app.clinic.dto.UserPrincipal;
 import com.app.clinic.model.Professional;
 import com.app.clinic.repository.ProfessionalRepository;
 import lombok.AllArgsConstructor;
@@ -23,15 +24,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) {
         logger.info("Loading user by professional");
         Optional<Professional> professional = professionalRepository.findOneByEmail(email);
-        if (professional.isEmpty()){
-            throw new UsernameNotFoundException("User not found");
-        }
-        return User
-                .builder()
-                .username(email)
-                .build();
+        return professional.map(value -> (UserDetails) UserPrincipal.create(value, null)).orElse(null);
     }
 }

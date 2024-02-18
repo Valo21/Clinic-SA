@@ -13,15 +13,21 @@ import lombok.SneakyThrows;
 import lombok.extern.flogger.Flogger;
 import org.slf4j.ILoggerFactory;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Logger;
@@ -38,7 +44,6 @@ public class CustomOidcUserService extends OidcUserService {
     public OidcUser loadUser(OidcUserRequest oidcUserRequest) throws OAuth2AuthenticationException {
         logger.info("Loading oidcUser");
         OidcUser oidcUser = super.loadUser(oidcUserRequest);
-
         try {
             return processOidcUser(oidcUserRequest, oidcUser);
         } catch (Exception ex) {
@@ -49,10 +54,9 @@ public class CustomOidcUserService extends OidcUserService {
     private OidcUser processOidcUser(OidcUserRequest oidcUserRequest, OidcUser oidcUser) {
         logger.info("Finding user by email...");
         Optional<Professional> userOptional = professionalRepository.findOneByEmail(oidcUser.getEmail());
-        Professional user = userOptional
+        return userOptional
                 .map(existingUser -> updateExistingUser(existingUser, oidcUser))
                 .orElseGet(() -> registerNewUser(oidcUserRequest, oidcUser));
-        return oidcUser;
     }
 
     public static String generatePassword() {
@@ -72,11 +76,10 @@ public class CustomOidcUserService extends OidcUserService {
         return sb.toString();
     }
 
-    private Professional registerNewUser(OAuth2UserRequest oAuth2UserRequest, OidcUser oidcUser) {
+    private OidcUser registerNewUser(OAuth2UserRequest oAuth2UserRequest, OidcUser oidcUser) {
         logger.info("Registering new user...");
-        Professional user = professionalRepository.save(Professional
+        Professional professional = professionalRepository.save(Professional
                 .builder()
-                .name(oidcUser.getFullName())
                 .givenName(oidcUser.getGivenName())
                 .familyName(oidcUser.getFamilyName())
                 .email(oidcUser.getEmail())
@@ -88,15 +91,27 @@ public class CustomOidcUserService extends OidcUserService {
                 .build());
         AppointmentLink appointmentLink = appointmentLinkRepository.save(AppointmentLink
                 .builder()
-                .professional(user)
+                .professional(professional)
                 .duration(30)
                 .build());
-        user.setAppointmentLink(appointmentLink);
-        return user;
+        professional.setAppointmentLink(appointmentLink);
+        professionalRepository.save(professional);
+        Collection<? extends GrantedAuthority> authorities = oidcUser.getAuthorities();
+        Map<String, Object> attributes = new HashMap<>(oidcUser.getAttributes());
+        attributes.put("id", professional.getId());
+        attributes.put("appointmentLinkId", appointmentLink.getId());
+        OidcUserInfo userInfo = new OidcUserInfo(attributes);
+        return new DefaultOidcUser(authorities, oidcUser.getIdToken(), userInfo);
     }
 
-    private Professional updateExistingUser(Professional existingUser, OidcUser oidcUser) {
+    private OidcUser updateExistingUser(Professional existingUser, OidcUser oidcUser) {
         logger.info("Updating user...");
-        return professionalRepository.save(existingUser);
+        Collection<? extends GrantedAuthority> authorities = oidcUser.getAuthorities();
+        Map<String, Object> attributes = new HashMap<>(oidcUser.getAttributes());
+        attributes.put("id", existingUser.getId());
+        attributes.put("picture", existingUser.getPicture());
+        attributes.put("appointmentLinkId", existingUser.getAppointmentLink().getId());
+        OidcUserInfo userInfo = new OidcUserInfo(attributes);
+        return new DefaultOidcUser(authorities, oidcUser.getIdToken(), userInfo);
     }
 }
