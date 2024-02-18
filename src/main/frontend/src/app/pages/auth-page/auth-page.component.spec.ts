@@ -11,7 +11,7 @@ describe('AuthPageComponent', () => {
       imports: [AuthPageComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(AuthPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

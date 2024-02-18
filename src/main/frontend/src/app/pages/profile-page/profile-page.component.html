@@ -3,7 +3,7 @@
         <div class="card responsive-card">
             <img alt="Profile picture" referrerpolicy="no-referrer" [ngSrc]="user.picture" priority="true" width="100" height="100">
             <div class="flex flex-col mt-4">
-                <h1>Name: {{user.name}}</h1>
+                <h1>Name: {{user.givenName}} {{user.familyName}}</h1>
                 <h1>Email: {{user.email}}</h1>
                 <h2>Specialty: </h2>
             </div>
@@ -72,7 +72,7 @@
     }
 </div>
 
-<app-modal [state]="true">
+<app-modal [(state)]="isLinkConfigModalOpen">
     <form class="flex flex-col gap-2" #linkConfigForm='ngForm' (submit)="saveLinkConfig($event, linkConfigForm)">
         <div>
             <label>
@@ -86,13 +86,13 @@
             <label>
                 Start hour:
             </label>
-            <input type="time">
+            <input name="startHour" type="time" value="08:00" ngModel>
         </div>
         <div>
             <label>
                 End hour:
             </label>
-            <input type="time">
+            <input name="endHour" type="time" value="20:00" ngModel>/#/appointments?id=6a27d233-355c-4aa
         </div>
         <button class="self-end bg-sky-400 px-4 py-1 rounded-full" type="submit">Save</button>
     </form>

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Location } from '@angular/common';
-import { BehaviorSubject, lastValueFrom, Observable } from 'rxjs';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { User } from './model/User';
+import {Router} from "@angular/router";
 
 const headers = new HttpHeaders().set('Accept', 'application/json');
 
@@ -16,7 +16,7 @@ export class AuthService {
 
   $user = new BehaviorSubject<User | null>(null);
   user = this.$user.asObservable();
-  constructor(private http: HttpClient, private location: Location) {}
+  constructor(private http: HttpClient, public router: Router) {}
 
     isAuthenticated(){
       return this.authenticationState.subscribe(value => value)
@@ -35,6 +35,7 @@ export class AuthService {
       )
   }
 
+
   signInWithGoogle(): void {
       location.href = `${location.origin}/oauth2/authorization/google`;
   }
@@ -44,4 +45,21 @@ export class AuthService {
       location.href = response.logoutUrl;
     });
   }
+    signIn(data: any): Subscription {
+        return this.http.post('/api/v1/auth', data).subscribe(
+            () => {
+                this.router.navigate(["/"]).then(() => alert("Signed in!"))
+            },
+            res => alert(res.error.message)
+        )
+    }
+
+    signUp(data: any): Subscription {
+        return this.http.post<ApiResponse<string>>('/api/v1/auth/signup', data).subscribe(
+            () => {
+                this.router.navigate(["/"]).then(() => alert("Signed up!"))
+            },
+            res => alert(res.error.message)
+        )
+    }
 }
